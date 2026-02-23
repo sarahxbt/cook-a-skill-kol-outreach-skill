@@ -1,5 +1,8 @@
 # Skill Card — KOL Qualifier & Outreach Drafter
 
+**Owner:** Vũ Phương Anh (Sarah)
+**Cook A Skill — Day 3 | Platform: Claude Project**
+
 | Mục | Nội dung |
 |:---|:---|
 | **Tên Skill** | KOL Qualifier & Outreach Drafter |
