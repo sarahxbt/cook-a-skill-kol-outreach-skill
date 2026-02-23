@@ -1,8 +1,8 @@
-# spec.md — KOL Scanner & Outreach Drafter
-**Skill Name:** KOL Scanner & Outreach Drafter
+# spec.md — KOL Qualifier & Outreach Drafter
+**Skill Name:** KOL Qualifier & Outreach Drafter
 **Owner:** BD & Marketing
-**Version:** v1.2 — Day 1 MVP (Final)
-**Status:** Draft — Pending Supervisor Approval
+**Version:** v1.4.1 — Day 1 MVP (Updated)
+**Status:** Approved
 
 ---
 
@@ -52,8 +52,8 @@ The skill **must ask all 3 questions and wait for answers before scoring or draf
 ```
 Before I begin, I need 3 quick answers:
 
-Q1 [Reply Direction] — What do you want the KOL to do after reading DM1?
-  (e.g., share a quick opinion in reply, agree to a 10-min chat, record a quick take, give written feedback)
+Q1 [Reply Direction & Next Step] — What exactly do you want the KOL to do in their first reply?
+  (e.g., share a quick opinion, agree to a 10-min chat, record a quick take, give written feedback)
   This determines how the Soft CTA is written and what "success" looks like for DM1.
 
 Q2 [Tone] — How should the DM feel?
@@ -83,6 +83,8 @@ key_topics: []             # topics/narratives KOL should speak to
 target_market_language:    # VN | EN | CN | mixed
 campaign_tone:             # e.g., educational, hype, community-first
 campaign_goal:             # awareness | launch | trust | community
+offer:  # what is being offered to the KOL (even if not mentioned in DM1)
+cta:    # desired next action (e.g., "10-min chat", "quick take on product")
 ```
 
 > If any field is missing → skill writes `MISSING — required before scoring` and halts that dimension. No inference from other fields.
@@ -98,6 +100,7 @@ One block per KOL, using this fixed template:
 handle: @username
 profile_url: https://...
 follower_count: 00000
+avg_impressions_per_10_posts: 00000   # average impressions across 10 most recent posts
 niche_tags: [tag1, tag2, tag3]
 bio: "..."
 recent_content_bullets:
@@ -111,8 +114,9 @@ language: VN | EN | CN
 **Field rules:**
 - `niche_tags` → used for Relevance scoring only; never used as evidence in DM copy
 - `recent_content_bullets` → the only source of personalization in DMs
-- `follower_count` → used for Engagement scoring only; no inferred engagement rate
-- Missing `recent_content_bullets` → flag as `[generic/no evidence]`; cap Relevance + Content Style ≤ 20 pts combined
+- `follower_count` → used for Engagement scoring only
+- `avg_impressions_per_10_posts` → (optional, Phase 2) not used in MVP scoring
+- Missing `recent_content_bullets` → flag as `[generic/no evidence]`; cap Relevance + Content Style Fit ≤ 20 pts combined
 
 ---
 
@@ -137,7 +141,7 @@ Total: **100 points**
 | 10k–49k | 8 |
 | < 10k | 4 |
 
-> Engagement score is based **solely on follower_count bracket**. Do not infer posting frequency, interaction rate, or quality of comments from any other field.
+> Engagement score is based **solely on follower_count bracket**. Do not infer posting frequency, interaction rate, or quality of comments from any other field. `avg_impressions_per_10_posts` is reserved for Phase 2.
 
 **Tier thresholds:**
 
@@ -147,7 +151,7 @@ Total: **100 points**
 | 🟡 **B** | 50–74 | Secondary outreach — DM1 + Soft CTA only |
 | 🔴 **C** | < 50 | Skip this campaign |
 
-**Guardrail cap:** If `recent_content_bullets` is missing or has only 1 bullet → Relevance + Content Style combined maximum = 20 pts → KOL cannot reach Tier A regardless of other scores.
+**Guardrail cap:** If `recent_content_bullets` is missing or has only 1 bullet → Relevance + Content Style Fit combined maximum = 20 pts → KOL cannot reach Tier A regardless of other scores.
 
 ---
 
@@ -171,6 +175,8 @@ Before generating any output, the skill scores campaign readiness on a **0–10 
 |---|---|
 | Gate score < 6 | `⛔ STOP: Readiness [X]/10. Minimum is 6. Missing: [list]. Please complete before running.` |
 | `key_topics` is empty | `⛔ STOP: key_topics is empty. Cannot score Relevance without it.` |
+| `offer` missing | `⛔ STOP: offer is missing. Offer is required to write outreach (even if not mentioned in DM1).` |
+| `cta` missing | `⛔ STOP: cta is missing. cta is required to write the Soft CTA after DM1 replies.` |
 | All KOLs have 0 bullets | `⛔ STOP: No KOL has recent_content_bullets. All DMs will be [GENERIC]. Confirm you want to proceed, or add bullets first.` |
 | Any clarifying question unanswered | `⛔ STOP (Clarifying Gate): Q[N] is unanswered. Readiness score does not override this. Please answer before I continue.` |
 
@@ -239,7 +245,7 @@ Readiness: [X]/10 | Run date: [date] | Total KOLs: [N] | Tier A: [N] | Tier B: [
 
 > **DM guardrails:**
 > - DM1 must not mention: collab, partnership, product name, campaign, paid, gifted
-> - **DM1 length: ≤ 300 characters** (fits X DM without truncation; keep it scannable)
+> - **DM1 length: ≤ 300 characters** (optimized for mobile screen scanning on X)
 > - **Follow-up DM length: ≤ 200 characters** (low-pressure bump — shorter = less imposing)
 > - If KOL has no bullets → tag entire DM block `[GENERIC — review before sending]`
 > - `niche_tags` may inform topic angle for follow-up DM but must **never** appear as fabricated evidence (never write "I saw your post about X" if X only came from niche_tags)
@@ -273,7 +279,7 @@ STEP 2 — Parse & Validate
         ▼
 STEP 3 — Score Each KOL
   Apply 4-dimension rubric
-  Apply bullet cap rule if triggered (Relevance + Content Style ≤ 20 combined)
+  Apply bullet cap rule if triggered (Relevance + Content Style Fit ≤ 20 combined)
   Assign Tier A / B / C
         │
         ▼
@@ -302,7 +308,7 @@ OUTPUT
 | # | Rule |
 |---|---|
 | G1 | Only use data provided by the user. No web fetching, no crawling, no hallucination. |
-| G2 | `recent_content_bullets` missing or < 2 bullets → write `[generic/no evidence]`; cap Relevance + Content Style combined ≤ 20 pts. |
+| G2 | `recent_content_bullets` missing or < 2 bullets → write `[generic/no evidence]`; cap Relevance + Content Style Fit combined ≤ 20 pts. |
 | G3 | DM personalization must reference real bullets only. `niche_tags` may suggest topic angle for follow-up DM but must never be framed as observed content. |
 | G4 | DM1 must contain zero collab/product/campaign signals. No exceptions. |
 | G4b | DM1 ≤ 300 characters. Follow-up DM ≤ 200 characters. If a draft exceeds the limit, trim before outputting — never ask the user to trim it themselves. |
@@ -310,6 +316,7 @@ OUTPUT
 | G6 | Campaign spec missing any field → write `MISSING` for that field; halt scoring of dependent dimension. |
 | G7 | Engagement score = follower_count bracket only. Do not infer post frequency, engagement rate, or content quality from any other field. |
 | G8 | Readiness Gate < 6 or any STOP condition triggered → halt entirely; list what's missing; do not partially generate output. |
+| G9 | Hard STOP if offer or cta is missing (required for DM writing). |
 
 ---
 
@@ -322,13 +329,18 @@ OUTPUT
 
 **Test 2 — Missing Bullets Guardrail**
 - Input: 4 KOLs with 0 bullets, 4 with 1 bullet, 4 with 2–3 bullets
-- Expected: 0-bullet and 1-bullet KOLs capped ≤ 20 pts on Relevance + Content Style combined; all tagged [generic/no evidence]; none reach Tier A
+- Expected: 0-bullet and 1-bullet KOLs capped ≤ 20 pts on Relevance + Content Style Fit combined; all tagged [generic/no evidence]; none reach Tier A
 - Pass condition: no fabricated evidence appears in any DM for capped KOLs
 
 **Test 3 — STOP Rule Trigger**
 - Input: campaign spec with empty `key_topics`; clarifying Q2 skipped
 - Expected: skill outputs `⛔ STOP` messages listing both issues; zero scoring output produced
 - Pass condition: skill does not generate any scorecard, analysis, or DM until both issues are resolved
+
+**Test 4 — Missing offer/cta STOP Rule Trigger**
+- Input: campaign spec missing `offer` or `cta`
+- Expected: skill outputs `⛔ STOP` message; zero scoring output produced
+- Pass condition: skill fails Readiness Gate and does not generate DMs until both fields are provided
 
 ---
 
@@ -366,11 +378,10 @@ OUTPUT
 - ❌ DM sequence beyond the 24–48h follow-up
 - ❌ Blacklist/whitelist management
 
-**Roadmap (Day 3–4 if time allows):**
-- DM2 (72h no-reply sequence)
-- Per-KOL `.md` file export
-- Tier quota check ("do I have enough Tier A?")
-- Competitor exclusion filter input
+**Roadmap (post-MVP):**
+- **Phase 2 (Data Enrichment):** Add optional fields for manual enrichment: `avg_impressions_per_10_posts`, `engagement_rate`, `avg_likes`, `avg_replies` (user paste) → turns on weighted engagement scoring.
+- **Phase 3 (Outcome Loop):** User paste Sent/Replied results → auto-tune tier thresholds based on actual conversion data (no ML required).
+- **Phase 4 (Scale Ops):** Export CSV/Notion-ready blocks + A/B hook variants for DM1.
 
 ---
 
@@ -401,4 +412,4 @@ Skill is considered successful if:
 
 ---
 
-*spec.md — v1.2 Final | Day 1 | Language: English | Ready for Supervisor approval*
+*spec.md — v1.4.1 | Day 1 | Language: English | Approved*
