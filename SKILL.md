@@ -1,4 +1,4 @@
-# spec.md — KOL Qualifier & Outreach Drafter
+# SKILL — KOL Qualifier & Outreach Drafter
 **Skill Name:** KOL Qualifier & Outreach Drafter
 **Owner:** BD & Marketing
 **Version:** v1.6.0 — Day 1 MVP (Final)
@@ -433,4 +433,4 @@ Skill is considered successful if:
 
 ---
 
-*spec.md — v1.6.0 | Day 1 | Language: English | Approved*
+*SKILL v1.6.0 | Day 1 | Language: English | Approved*
