@@ -28,9 +28,15 @@ AI Skill cho BD/Marketing: paste campaign spec + danh sách KOL → AI chấm đ
 ## AI Showcase
 
 Thư mục `ai-showcase/` chứa các screenshot chứng minh quá trình làm việc với AI:
-1. `01-brainstorm-spec-with-claude.png`: Lên ý tưởng spec với Claude
-2. `02-claude-analyzing-prompt-weaknesses.png`: Claude phân tích điểm yếu trong adversarial prompt
-3. `03-gemini-applying-findings-to-skill.png`: Dùng Gemini để apply các findings vào file SKILL.md
+
+1. `01-brainstorm-spec-with-claude.png` — Lên ý tưởng spec với Claude
+2. `02-claude-analyzing-prompt-weaknesses.png` — Claude phân tích điểm yếu trong adversarial prompt
+3. `03-gemini-applying-findings-to-skill.png` — Dùng Gemini để apply các findings vào file SKILL.md
+4. `04-prompt-ai-to-review-spec.png` — Dùng AI prompt AI khác review spec (multi-AI pipeline)
+5. `05-human-review-and-selective-apply.png` — Human-in-the-loop: review findings và chọn lọc apply
+6. `06-ai-dry-run-test-automation.png` — AI tự chạy dry-run test automation
+7. `07-ai-compliance-audit.png` — AI audit compliance với GUIDEBOOK (PASS/FAIL table)
+8. `08-dry-run-all-guardrails-pass.png` — Kết quả: tất cả guardrails PASS ✅
 
 
 ## How to Run
