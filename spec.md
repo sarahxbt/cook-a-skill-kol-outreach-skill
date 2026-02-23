@@ -1,0 +1,404 @@
+# spec.md — KOL Scanner & Outreach Drafter
+**Skill Name:** KOL Scanner & Outreach Drafter
+**Owner:** BD & Marketing
+**Version:** v1.2 — Day 1 MVP (Final)
+**Status:** Draft — Pending Supervisor Approval
+
+---
+
+## 1. Problem Statement
+
+Every time the team prepares a GTM campaign, BD/Marketing must:
+1. Manually scan KOL profiles one by one — read content, assess fit, take notes
+2. Score inconsistently across team members → missed opportunities, no shared standard
+3. Write outreach from scratch for each KOL → generic messages → low reply rates
+
+**This skill solves all three steps in a single, repeatable workflow.**
+
+---
+
+## 2. User
+
+| | |
+|---|---|
+| **Primary user** | BD/Marketing (skill author — live demo) |
+| **Secondary user** | BD/Marketing team members using the skill after it's shared |
+
+---
+
+## 3. Assumptions & Unknowns
+
+### Assumptions (locked for MVP)
+- User always provides data manually via copy-paste; no API or web scraping
+- `recent_content_bullets` are written by the user in their own words — not crawled
+- Each KOL has at most 3 bullets; at minimum 0 (missing = explicitly flagged)
+- Scoring is deterministic: same input → same tier every time
+- DM1 is always sent before any collab mention; CTA is a separate optional step
+- Campaign spec is always provided in English, regardless of `target_market_language`
+- One campaign spec per run; batch multi-campaign comparison is out of scope for MVP
+
+### Unknowns (to resolve before Day 2)
+- What is the expected quota per tier? (e.g., "need at least 5 Tier A") — affects how user interprets scorecard
+- Does the team have a preferred DM platform? (X/Twitter DM, Telegram, email) — affects DM formatting
+- Are there any KOLs that should always be excluded (competitor-adjacent, blacklisted)?
+- Will the skill be run by a single person or multiple team members simultaneously?
+
+---
+
+## 4. Clarifying Questions (Mandatory Before Generating Output)
+
+The skill **must ask all 3 questions and wait for answers before scoring or drafting any DM.** Do not generate output based on assumed answers.
+
+```
+Before I begin, I need 3 quick answers:
+
+Q1 [Reply Direction] — What do you want the KOL to do after reading DM1?
+  (e.g., share a quick opinion in reply, agree to a 10-min chat, record a quick take, give written feedback)
+  This determines how the Soft CTA is written and what "success" looks like for DM1.
+
+Q2 [Tone] — How should the DM feel?
+  (e.g., peer-to-peer casual, respectful fan, researcher asking expert, industry insider)
+  This determines the voice and framing of DM1.
+
+Q3 [Hard Constraints] — Any non-negotiable filters?
+  (e.g., "only KOLs who post in Vietnamese", "exclude anyone with < 10k followers",
+  "no KOLs who have posted about competitor X")
+  These will be applied before scoring begins.
+```
+
+> If the user skips any question, the skill must re-ask that specific question before proceeding. Partial answers are not accepted.
+
+---
+
+## 5. Input Schema
+
+### 5a. Campaign Spec (`campaign-spec.md`)
+
+```
+campaign_name:
+product_description:
+target_audience:
+value_proposition:
+key_topics: []             # topics/narratives KOL should speak to
+target_market_language:    # VN | EN | CN | mixed
+campaign_tone:             # e.g., educational, hype, community-first
+campaign_goal:             # awareness | launch | trust | community
+```
+
+> If any field is missing → skill writes `MISSING — required before scoring` and halts that dimension. No inference from other fields.
+
+---
+
+### 5b. KOL List (copy-paste from spreadsheet)
+
+One block per KOL, using this fixed template:
+
+```
+---
+handle: @username
+profile_url: https://...
+follower_count: 00000
+niche_tags: [tag1, tag2, tag3]
+bio: "..."
+recent_content_bullets:
+  - "..."
+  - "..."
+  - "..."        # minimum 0, maximum 3 bullets
+language: VN | EN | CN
+---
+```
+
+**Field rules:**
+- `niche_tags` → used for Relevance scoring only; never used as evidence in DM copy
+- `recent_content_bullets` → the only source of personalization in DMs
+- `follower_count` → used for Engagement scoring only; no inferred engagement rate
+- Missing `recent_content_bullets` → flag as `[generic/no evidence]`; cap Relevance + Content Style ≤ 20 pts combined
+
+---
+
+## 6. Scoring Rubric
+
+Total: **100 points**
+
+| Dimension | Weight | Scoring Basis | Data Source |
+|---|---|---|---|
+| **Relevance** | 40 pts | Do KOL's topics align with `key_topics`? | `niche_tags` + `recent_content_bullets` |
+| **Content Style Fit** | 30 pts | Does KOL's tone/format match `campaign_tone`? | `recent_content_bullets` only |
+| **Engagement** | 20 pts | Follower count bracket only | `follower_count` |
+| **Language Match** | 10 pts | Does KOL's language match `target_market_language`? | `language` field |
+
+**Engagement bracket (follower_count → pts):**
+
+| Followers | Points |
+|---|---|
+| ≥ 500k | 20 |
+| 100k–499k | 16 |
+| 50k–99k | 12 |
+| 10k–49k | 8 |
+| < 10k | 4 |
+
+> Engagement score is based **solely on follower_count bracket**. Do not infer posting frequency, interaction rate, or quality of comments from any other field.
+
+**Tier thresholds:**
+
+| Tier | Score | Action |
+|---|---|---|
+| 🟢 **A** | ≥ 75 | Priority outreach — DM1 + Soft CTA + Follow-up DM |
+| 🟡 **B** | 50–74 | Secondary outreach — DM1 + Soft CTA only |
+| 🔴 **C** | < 50 | Skip this campaign |
+
+**Guardrail cap:** If `recent_content_bullets` is missing or has only 1 bullet → Relevance + Content Style combined maximum = 20 pts → KOL cannot reach Tier A regardless of other scores.
+
+---
+
+## 7. Readiness Gate
+
+Before generating any output, the skill scores campaign readiness on a **0–10 scale**.
+
+| Condition | Points |
+|---|---|
+| `campaign-spec.md` fully filled (all fields present) | +3 |
+| `key_topics` has ≥ 2 entries | +2 |
+| ≥ 1 KOL has 2–3 bullets | +2 |
+| `campaign_tone` and `campaign_goal` both present | +1 |
+| ≥ 5 KOLs provided | +2 |
+
+> **Note:** Clarifying Questions (Section 4) are a **separate gating criterion** — they are not counted in this 0–10 score. Even a perfect score of 10 here does not unlock generation if any clarifying question is unanswered. Both gates must pass independently.
+
+**STOP rules — skill halts and requests fixes before proceeding:**
+
+| STOP Condition | Message |
+|---|---|
+| Gate score < 6 | `⛔ STOP: Readiness [X]/10. Minimum is 6. Missing: [list]. Please complete before running.` |
+| `key_topics` is empty | `⛔ STOP: key_topics is empty. Cannot score Relevance without it.` |
+| All KOLs have 0 bullets | `⛔ STOP: No KOL has recent_content_bullets. All DMs will be [GENERIC]. Confirm you want to proceed, or add bullets first.` |
+| Any clarifying question unanswered | `⛔ STOP (Clarifying Gate): Q[N] is unanswered. Readiness score does not override this. Please answer before I continue.` |
+
+> If gate score ≥ 6 and no STOP condition is triggered → display score and proceed: `✅ Readiness: [X]/10 — proceeding.`
+
+---
+
+## 8. Output Structure
+
+All output is returned as **one Markdown block**, ready to copy. Three sections in order:
+
+---
+
+### Section 1 — KOL Scorecard Summary
+
+```markdown
+## KOL Scorecard — [Campaign Name]
+Readiness: [X]/10 | Run date: [date] | Total KOLs: [N] | Tier A: [N] | Tier B: [N] | Tier C: [N]
+
+| Handle | Tier | Score | Relevance | Content Fit | Engagement | Language | Note |
+|---|---|---|---|---|---|---|---|
+| @handle1 | 🟢 A | 82 | 34/40 | 26/30 | 16/20 | 6/10 | Strong fit on [topic] |
+| @handle2 | 🟡 B | 63 | 22/40 | 21/30 | 12/20 | 8/10 | Partial fit — tone mismatch |
+| @handle3 | 🔴 C | 41 | 10/40 | 11/30 | 12/20 | 8/10 | Off-topic, skip |
+```
+
+---
+
+### Section 2 — KOL Analysis (per KOL)
+
+```markdown
+### @handle1
+- **Tier:** 🟢 A | **Score:** 82/100
+- **Relevance:** [1–2 sentences using bullets as evidence — or "[generic/no evidence]" if missing]
+- **Content style:** [observation on tone/format derived from bullets only]
+- **Engagement:** [follower bracket applied — e.g., "100k–499k → 16 pts"]
+- **Language:** [match / mismatch with target_market_language]
+- **Red flags:** [if any — e.g., "all bullets appear off-topic from key_topics"]
+- **Recommendation:** ✅ Priority outreach | ⏸ Hold | ❌ Skip
+```
+
+---
+
+### Section 3 — DM Drafts (Tier A and B only)
+
+```markdown
+### DM — @handle1 (Tier A)
+
+**DM1 — Opinion Ask (no pitch, no collab mention):**
+> [Message referencing 1–2 real bullets from KOL's recent content]
+> Goal: ask for their perspective on a topic relevant to their work — not the campaign
+
+**Soft CTA (use only if KOL replies to DM1):**
+> [One sentence — request 10-min chat or quick take]
+
+**Personalization source:** "[exact bullet text used]"
+
+---
+
+**Follow-up DM — Tier A only (send at 24–48h if no reply to DM1):**
+> [Re-engagement using a different angle — references second bullet if available,
+>  or adjacent topic from niche_tags. Still zero pitch.]
+
+**Follow-up personalization source:** "[bullet used — or 'niche_tags only — not presented as observed content'"]
+```
+
+> **DM guardrails:**
+> - DM1 must not mention: collab, partnership, product name, campaign, paid, gifted
+> - **DM1 length: ≤ 300 characters** (fits X DM without truncation; keep it scannable)
+> - **Follow-up DM length: ≤ 200 characters** (low-pressure bump — shorter = less imposing)
+> - If KOL has no bullets → tag entire DM block `[GENERIC — review before sending]`
+> - `niche_tags` may inform topic angle for follow-up DM but must **never** appear as fabricated evidence (never write "I saw your post about X" if X only came from niche_tags)
+> - Soft CTA is always a separate block — never pre-merged into DM1
+> - Follow-up DM applies to Tier A only
+
+---
+
+## 9. Workflow
+
+```
+INPUT
+ ├── campaign-spec.md
+ └── KOL list (paste)
+        │
+        ▼
+STEP 0 — Clarifying Questions
+  Ask Q1 (Direction), Q2 (Tone), Q3 (Hard Constraints)
+  Wait for all 3 answers — do not proceed on partial answers
+        │
+        ▼
+STEP 1 — Readiness Gate
+  Score 0–10 → apply STOP rules if any triggered
+  Display gate score before continuing
+        │
+        ▼
+STEP 2 — Parse & Validate
+  Extract key_topics, tone, language, goal from campaign spec
+  Per KOL: check all fields present; flag missing bullets
+        │
+        ▼
+STEP 3 — Score Each KOL
+  Apply 4-dimension rubric
+  Apply bullet cap rule if triggered (Relevance + Content Style ≤ 20 combined)
+  Assign Tier A / B / C
+        │
+        ▼
+STEP 4 — Write Analysis
+  Relevance + Content Style: reference bullets as evidence
+  Write [generic/no evidence] where bullets are absent
+  Engagement: follower_count bracket only — no inferences
+        │
+        ▼
+STEP 5 — Draft DMs
+  Tier A: DM1 + Soft CTA + Follow-up DM (24–48h)
+  Tier B: DM1 + Soft CTA only
+  Tier C: no DM generated
+  Tag [GENERIC] where bullets are missing
+  niche_tags: topic angle only, never as fabricated evidence
+        │
+        ▼
+OUTPUT
+  └── One Markdown block: Scorecard → Analysis → DM Drafts
+```
+
+---
+
+## 10. Guardrails (Non-Negotiable)
+
+| # | Rule |
+|---|---|
+| G1 | Only use data provided by the user. No web fetching, no crawling, no hallucination. |
+| G2 | `recent_content_bullets` missing or < 2 bullets → write `[generic/no evidence]`; cap Relevance + Content Style combined ≤ 20 pts. |
+| G3 | DM personalization must reference real bullets only. `niche_tags` may suggest topic angle for follow-up DM but must never be framed as observed content. |
+| G4 | DM1 must contain zero collab/product/campaign signals. No exceptions. |
+| G4b | DM1 ≤ 300 characters. Follow-up DM ≤ 200 characters. If a draft exceeds the limit, trim before outputting — never ask the user to trim it themselves. |
+| G5 | Soft CTA is always a separate block — never merged into DM1. |
+| G6 | Campaign spec missing any field → write `MISSING` for that field; halt scoring of dependent dimension. |
+| G7 | Engagement score = follower_count bracket only. Do not infer post frequency, engagement rate, or content quality from any other field. |
+| G8 | Readiness Gate < 6 or any STOP condition triggered → halt entirely; list what's missing; do not partially generate output. |
+
+---
+
+## 11. Acceptance Tests
+
+**Test 1 — Happy Path**
+- Input: fully filled campaign spec + 12 KOLs each with 2–3 bullets, all clarifying questions answered
+- Expected: all KOLs scored correctly; DM1 references real bullets; no [GENERIC] tags; Tier assignments match manual rubric calculation ±0 pts
+- Pass condition: every Tier A KOL has a Follow-up DM; every Tier B has DM1 + Soft CTA only; Tier C has no DM
+
+**Test 2 — Missing Bullets Guardrail**
+- Input: 4 KOLs with 0 bullets, 4 with 1 bullet, 4 with 2–3 bullets
+- Expected: 0-bullet and 1-bullet KOLs capped ≤ 20 pts on Relevance + Content Style combined; all tagged [generic/no evidence]; none reach Tier A
+- Pass condition: no fabricated evidence appears in any DM for capped KOLs
+
+**Test 3 — STOP Rule Trigger**
+- Input: campaign spec with empty `key_topics`; clarifying Q2 skipped
+- Expected: skill outputs `⛔ STOP` messages listing both issues; zero scoring output produced
+- Pass condition: skill does not generate any scorecard, analysis, or DM until both issues are resolved
+
+---
+
+## 12. Edge Cases
+
+**Edge Case 1 — KOL language doesn't match target_market_language**
+- Example: KOL posts in EN, campaign targets VN market
+- Handling: Language Match = 0 pts; flagged in analysis as "language mismatch"; recommendation set to ⏸ Hold unless total score still reaches Tier A/B threshold without language pts
+
+**Edge Case 2 — KOL has 2–3 bullets but all are off-topic from key_topics**
+- Handling: Relevance scored low (≤ 10 pts); Content Style scored on tone only (no topic connection); red flag noted ("bullets present but unrelated to key_topics"); no fabricated alignment to campaign
+
+**Edge Case 3 — Duplicate handles or identical profile_urls**
+- Handling: skill outputs `⚠️ Duplicate detected: @handle appears [N] times` before scoring begins; asks user to confirm which entry to keep; does not score duplicates until resolved
+
+---
+
+## 13. MVP Scope
+
+**IN SCOPE (Day 1–2):**
+- ✅ Mandatory clarifying questions (3) with hard gate before any output
+- ✅ Readiness Gate 0–10 with STOP rules
+- ✅ Parse campaign spec .md + KOL list paste
+- ✅ Score 12 KOLs across 4 dimensions with fixed thresholds
+- ✅ Assign Tier A / B / C
+- ✅ Per-KOL analysis referencing real bullets
+- ✅ DM1 + Soft CTA for Tier A and B
+- ✅ Follow-up DM (24–48h) for Tier A only
+- ✅ One copy-ready Markdown output block
+
+**OUT OF SCOPE (MVP):**
+- ❌ Fetching data from X/Twitter or any external source
+- ❌ Auto CSV/PDF export
+- ❌ Multi-campaign batch runs
+- ❌ DM sequence beyond the 24–48h follow-up
+- ❌ Blacklist/whitelist management
+
+**Roadmap (Day 3–4 if time allows):**
+- DM2 (72h no-reply sequence)
+- Per-KOL `.md` file export
+- Tier quota check ("do I have enough Tier A?")
+- Competitor exclusion filter input
+
+---
+
+## 14. Demo Plan (Day 4)
+
+| Step | Content | Duration |
+|---|---|---|
+| 1 | Problem framing — before/after | 2 min |
+| 2 | Show clarifying questions firing + answers | 1 min |
+| 3 | Paste real `campaign-spec.md` → Readiness Gate output live | 1 min |
+| 4 | Paste 12 real KOLs → full scoring run | 2 min |
+| 5 | Walk through Scorecard + 2 Analysis examples | 2 min |
+| 6 | Show DM1 vs Follow-up DM for 1 Tier A KOL | 1 min |
+| 7 | Demonstrate guardrail: KOL with no bullets → [generic/no evidence] + cap applied | 1 min |
+| 8 | Q&A | open |
+
+---
+
+## 15. Success Criteria
+
+Skill is considered successful if:
+- [ ] Runs live with 12 real KOLs without errors or hallucinated data
+- [ ] Tier assignments are manually verifiable against rubric ±0 pts
+- [ ] DMs are personalized from real bullets — no invented evidence
+- [ ] [GENERIC] tag fires correctly on KOLs missing bullets
+- [ ] STOP rules fire correctly when inputs are incomplete
+- [ ] BGK can copy a DM draft and use it with minimal or no editing
+
+---
+
+*spec.md — v1.2 Final | Day 1 | Language: English | Ready for Supervisor approval*
