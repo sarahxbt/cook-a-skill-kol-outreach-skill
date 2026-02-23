@@ -1,7 +1,7 @@
 # spec.md — KOL Qualifier & Outreach Drafter
 **Skill Name:** KOL Qualifier & Outreach Drafter
 **Owner:** BD & Marketing
-**Version:** v1.4.1 — Day 1 MVP (Updated)
+**Version:** v1.6.0 — Day 1 MVP (Final)
 **Status:** Approved
 
 ---
@@ -29,11 +29,12 @@ Every time the team prepares a GTM campaign, BD/Marketing must:
 ## 3. Assumptions & Unknowns
 
 ### Assumptions (locked for MVP)
+- KOL discovery (finding new KOLs via web scanning) is out of scope; this skill qualifies a list the user has already compiled — separation of discovery from qualification is the deliberate MVP tradeoff.
 - User always provides data manually via copy-paste; no API or web scraping
 - `recent_content_bullets` are written by the user in their own words — not crawled
 - Each KOL has at most 3 bullets; at minimum 0 (missing = explicitly flagged)
 - Scoring is deterministic: same input → same tier every time
-- DM1 is always sent before any collab mention; CTA is a separate optional step
+- DM1 is always sent before any collab mention; Soft CTA is always drafted as a separate output block for Tier A and B — it is conditionally sent only after KOL replies to DM1, but it is always pre-generated.
 - Campaign spec is always provided in English, regardless of `target_market_language`
 - One campaign spec per run; batch multi-campaign comparison is out of scope for MVP
 
@@ -66,7 +67,7 @@ Q3 [Hard Constraints] — Any non-negotiable filters?
   These will be applied before scoring begins.
 ```
 
-> If the user skips any question, the skill must re-ask that specific question before proceeding. Partial answers are not accepted.
+> If the user skips any question, the skill must re-ask that specific question before proceeding. Partial answers are not accepted. A partial answer is defined as: the user acknowledges the question but provides insufficient specificity to act on (e.g., 'yes' or 'I don't know' without elaboration). A single-word directional answer (e.g., 'casual' for Q2) is accepted. A one-word or content-free answer (e.g., 'ok', 'whatever') must trigger a re-ask.
 
 ---
 
@@ -80,7 +81,7 @@ product_description:
 target_audience:
 value_proposition:
 key_topics: []             # topics/narratives KOL should speak to
-target_market_language:    # VN | EN | CN | mixed
+target_market_language:    # EN | CN | mixed
 campaign_tone:             # e.g., educational, hype, community-first
 campaign_goal:             # awareness | launch | trust | community
 offer:  # what is being offered to the KOL (even if not mentioned in DM1)
@@ -93,30 +94,21 @@ cta:    # desired next action (e.g., "10-min chat", "quick take on product")
 
 ### 5b. KOL List (copy-paste from spreadsheet)
 
-One block per KOL, using this fixed template:
+User provides a list of KOLs formatted as a table (or CSV/spreadsheet copy-paste). The table **must** contain the following columns:
 
-```
----
-handle: @username
-profile_url: https://...
-follower_count: 00000
-avg_impressions_per_10_posts: 00000   # average impressions across 10 most recent posts
-niche_tags: [tag1, tag2, tag3]
-bio: "..."
-recent_content_bullets:
-  - "..."
-  - "..."
-  - "..."        # minimum 0, maximum 3 bullets
-language: VN | EN | CN
----
-```
+- **Handle**: e.g., @username
+- **Follower**: numeric value (e.g., 00000)
+- **avg_impressions_per_10_posts**: optional (Phase 2); leave blank in MVP
+- **Niche/Tags**: e.g., tag1, tag2
+- **Language**: EN | CN
+- **Recent Content Bullets**: The user's notes on the KOL's recent posts. Minimum 0 (empty cell), maximum 3 bullets.
 
 **Field rules:**
-- `niche_tags` → used for Relevance scoring only; never used as evidence in DM copy
-- `recent_content_bullets` → the only source of personalization in DMs
-- `follower_count` → used for Engagement scoring only
+- `Niche/Tags` → used for Relevance scoring only; never used as evidence in DM copy
+- `Recent Content Bullets` → the only source of personalization in DMs
+- `Follower` → used for Engagement scoring only. Must be evaluated as an integer. If the value contains commas, 'k' notation, or approximation symbols (e.g., '~'), the skill must normalize it first (100k → 100000). If the value cannot be parsed, flag as `[INVALID]` and score Engagement as 0.
 - `avg_impressions_per_10_posts` → (optional, Phase 2) not used in MVP scoring
-- Missing `recent_content_bullets` → flag as `[generic/no evidence]`; cap Relevance + Content Style Fit ≤ 20 pts combined
+- Missing `Recent Content Bullets` (0 cells) or only 1 bullet → flag as `[generic/no evidence]`; cap Relevance + Content Style Fit combined ≤ 20 pts.
 
 ---
 
@@ -131,6 +123,20 @@ Total: **100 points**
 | **Engagement** | 20 pts | Follower count bracket only | `follower_count` |
 | **Language Match** | 10 pts | Does KOL's language match `target_market_language`? | `language` field |
 
+**Relevance bands (40 pts):**
+- Strong alignment to ≥ 2 `key_topics` (via bullets or niche_tags) = 34–40
+- Partial alignment to 1 `key_topic` = 20–33
+- Tangential / weak alignment = 10–19
+- No alignment = 0–9
+
+> **Scoring priority:** `Recent Content Bullets` are primary evidence — they dominate when present. `Niche/Tags` serve as secondary context only; they may contribute up to half the Relevance score when bullets are absent or insufficient.
+
+**Content Style Fit bands (30 pts):**
+- Tone/format clearly matches `campaign_tone` = 25–30
+- Partially matches = 15–24
+- Neutral / unclear = 8–14
+- Mismatches = 0–7
+
 **Engagement bracket (follower_count → pts):**
 
 | Followers | Points |
@@ -142,6 +148,8 @@ Total: **100 points**
 | < 10k | 4 |
 
 > Engagement score is based **solely on follower_count bracket**. Do not infer posting frequency, interaction rate, or quality of comments from any other field. `avg_impressions_per_10_posts` is reserved for Phase 2.
+
+> **Mixed Language Rule:** If `target_market_language = mixed`: KOL posting in either EN or CN scores 10 pts; KOL posting in neither scores 0 pts.
 
 **Tier thresholds:**
 
@@ -181,6 +189,7 @@ Before generating any output, the skill scores campaign readiness on a **0–10 
 | Any clarifying question unanswered | `⛔ STOP (Clarifying Gate): Q[N] is unanswered. Readiness score does not override this. Please answer before I continue.` |
 
 > If gate score ≥ 6 and no STOP condition is triggered → display score and proceed: `✅ Readiness: [X]/10 — proceeding.`
+> **Note:** `offer` and `cta` are required even though DM1 is not a pitch; they define the post-reply next step.
 
 ---
 
@@ -340,14 +349,19 @@ OUTPUT
 **Test 4 — Missing offer/cta STOP Rule Trigger**
 - Input: campaign spec missing `offer` or `cta`
 - Expected: skill outputs `⛔ STOP` message; zero scoring output produced
-- Pass condition: skill fails Readiness Gate and does not generate DMs until both fields are provided
+- Pass condition: skill outputs `⛔ STOP` message for the missing field(s) via the dedicated offer/cta STOP rule (independent of Gate score); zero scoring or DM output is produced.
+
+**Test 5 — Mixed Language Campaign**
+- Input: campaign spec with `target_market_language: mixed`; KOL list includes 1 EN KOL and 1 CN KOL
+- Expected: both EN and CN KOLs score 10/10 on Language Match
+- Pass condition: Language Match is not assigned arbitrarily; both supported languages receive full score under mixed campaign
 
 ---
 
 ## 12. Edge Cases
 
 **Edge Case 1 — KOL language doesn't match target_market_language**
-- Example: KOL posts in EN, campaign targets VN market
+- Example: KOL posts in EN, campaign targets CN market
 - Handling: Language Match = 0 pts; flagged in analysis as "language mismatch"; recommendation set to ⏸ Hold unless total score still reaches Tier A/B threshold without language pts
 
 **Edge Case 2 — KOL has 2–3 bullets but all are off-topic from key_topics**
@@ -412,4 +426,4 @@ Skill is considered successful if:
 
 ---
 
-*spec.md — v1.4.1 | Day 1 | Language: English | Approved*
+*spec.md — v1.6.0 | Day 1 | Language: English | Approved*
