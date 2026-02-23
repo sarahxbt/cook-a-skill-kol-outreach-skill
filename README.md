@@ -25,6 +25,14 @@ AI Skill cho BD/Marketing: paste campaign spec + danh sách KOL → AI chấm đ
 | `mock_kols.md` | 12 KOL test data với edge cases |
 | `skill-card.md` | Skill Card (1 trang tóm tắt) |
 
+## AI Showcase
+
+Thư mục `ai-showcase/` chứa các screenshot chứng minh quá trình làm việc với AI:
+1. `01-brainstorm-spec-with-claude.png`: Lên ý tưởng spec với Claude
+2. `02-claude-analyzing-prompt-weaknesses.png`: Claude phân tích điểm yếu trong adversarial prompt
+3. `03-gemini-applying-findings-to-skill.png`: Dùng Gemini để apply các findings vào file SKILL.md
+
+
 ## How to Run
 
 1. Tạo Claude Project mới
