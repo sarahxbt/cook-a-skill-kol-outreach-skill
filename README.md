@@ -24,6 +24,8 @@ AI Skill for BD/Marketing: paste a campaign spec + KOL list → AI scores across
 | `mock_campaign.md` | Campaign demo: Whales Prediction Waitlist Launch |
 | `mock_kols.md` | 12 KOL test data with edge cases |
 | `skill-card.md` | Skill Card (one-page summary) |
+| `AGENTS.md` | AI models used, design decisions, things tried and abandoned |
+| `CHANGELOG.md` | Version history with evidence from commit log |
 
 ## AI Showcase
 
@@ -48,7 +50,7 @@ The `ai-showcase/` folder contains 8 screenshots documenting the AI-assisted dev
 | Apply Review Patches | GPT-5.2 Thinking (via Perplexity) | Precise, targeted execution of fixes from review findings |
 | Independent SKILL.md Review | Gemini 3.1 Pro (via Perplexity) | Second independent review on the system prompt |
 | Final Verification | Claude Opus 4.6 (Antigravity IDE) | Deep compliance check against GUIDEBOOK requirements |
-| Dry-run & Polish | Gemini 3.1 Pro + Claude Opus 4.6 (Antigravity IDE) | End-to-end test simulation + fix loop |
+| Dry-run & Polish | Gemini 3.1 Pro + Claude Sonnet 4.6 + Claude Opus 4.6 (Antigravity IDE) | End-to-end test simulation + fix loop |
 
 **Human-in-the-loop:** Every AI suggestion was reviewed manually. Findings that conflicted with design intent were rejected (e.g., rejected the rule "follower=0 → INVALID" because the existing bracket < 10k already handles it correctly at 4 pts).
 

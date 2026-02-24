@@ -400,9 +400,10 @@ OUTPUT
 - ❌ Blacklist/whitelist management
 
 **Roadmap (post-MVP):**
-- **Phase 2 (Data Enrichment):** Add optional fields for manual enrichment: `avg_impressions_per_10_posts`, `engagement_rate`, `avg_likes`, `avg_replies` (user paste) → turns on weighted engagement scoring.
-- **Phase 3 (Outcome Loop):** User paste Sent/Replied results → auto-tune tier thresholds based on actual conversion data (no ML required).
-- **Phase 4 (Scale Ops):** Export CSV/Notion-ready blocks + A/B hook variants for DM1.
+- **Phase 2 (Auto-pull + Delivery):** Auto-pull KOL data via PhantomBuster or Chrome extension (twitter-web-exporter) → Claude Skill normalizes + scores + drafts DMs → Telegram bot delivers output to BD. OpenClaw orchestrates full pipeline.
+- **Phase 2.5 (Audience Quality):** Mine KOL's tweet replies/comments → extract audience sentiment → add "Audience Quality" as new scoring dimension to evaluate whether the KOL's followers are genuinely engaged or low-quality.
+- **Phase 3 (Engagement + Outcome Loop):** Per-tweet engagement metrics (avg likes/replies/reposts) as 5th scoring dimension → re-rank KOLs → track DM reply rates → feedback loop to continuously improve scoring weights.
+- **Phase 4 (Scale Ops):** Export CSV/Notion-ready blocks + A/B hook variants for DM1. Add "Brand Safety" dimension to rubric. Batch mode for multi-campaign KOL overlap comparison.
 
 ---
 
