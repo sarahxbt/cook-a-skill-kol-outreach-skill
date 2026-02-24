@@ -29,14 +29,14 @@ AI Skill cho BD/Marketing: paste campaign spec + danh sách KOL → AI chấm đ
 
 Thư mục `ai-showcase/` chứa 8 screenshot chứng minh quá trình làm việc với AI, theo thứ tự timeline:
 
-1. `01-ideation-brainstorm-claude.png` — Brainstorm ý tưởng skill cùng Claude (Sonnet 4.6)
-2. `02-self-critique-prompt-weaknesses.png` — Claude tự phản biện, chỉ ra 6 điểm yếu trong prompt
-3. `03-multi-ai-review-pipeline.png` — Viết review prompt cho AI khác đọc cold-read (multi-AI pipeline)
-4. `04-human-in-loop-selective-apply.png` — Human-in-the-loop: apply 7 findings, loại bỏ CAT-2-02
-5. `05-adversarial-kol-risk-analysis.png` — AI phân tích rủi ro & điểm yếu của từng KOL (adversarial)
-6. `06-ai-test-plan-generation.png` — AI tự viết Full Flow Test Guide + expected tier distribution
-7. `07-compliance-audit-checklist.png` — AI audit toàn bộ GUIDEBOOK requirements (PASS/FAIL/PARTIAL)
-8. `08-final-all-guardrails-pass.png` — Kết quả dry-run: tất cả guardrails PASS ✅, score khớp 100%
+1. `01-ideation-brainstorm-claude.png` — 🧠 Brainstorm ý tưởng skill cùng Claude (Sonnet 4.6)
+2. `02-self-critique-prompt-weaknesses.png` — 🔍 Claude tự phản biện, chỉ ra 6 điểm yếu trong prompt
+3. `03-multi-ai-review-pipeline.png` — 🔄 Viết review prompt cho AI khác đọc cold-read (multi-AI pipeline)
+4. `04-human-in-loop-selective-apply.png` — 👤 Human-in-the-loop: apply 7 findings, loại bỏ CAT-2-02
+5. `05-spec-finalized-build-skill.png` — 🏗️ Spec hoàn chỉnh (bỏ VN language), bắt đầu viết SKILL.md
+6. `06-compliance-audit-checklist.png` — 📋 AI audit toàn bộ GUIDEBOOK requirements (PASS/FAIL/PARTIAL)
+7. `07-ai-automated-dry-run.png` — 🤖 AI tự chạy dry-run (không cần bật Claude thủ công)
+8. `08-final-all-guardrails-pass.png` — ✅ Kết quả dry-run: tất cả guardrails PASS, score khớp 100%
 
 
 ## How to Run
