@@ -38,6 +38,21 @@ The `ai-showcase/` folder contains 8 screenshots documenting the AI-assisted dev
 7. `07-ai-automated-dry-run.png` — 🤖 AI running an automated dry-run (no manual Claude session needed)
 8. `08-final-all-guardrails-pass.png` — ✅ Dry-run result: all guardrails PASS, scores match 100%
 
+## AI Pipeline Used
+
+| Step | AI Model | Role |
+|:---|:---|:---|
+| Brainstorm & Spec Draft | Claude Sonnet 4.6 (Claude Desktop) | Creative ideation, rapid iteration on spec structure |
+| Self-Critique & Review Prompt | Claude Sonnet 4.6 (Claude Desktop) | Identified 6 weaknesses in own prompt; wrote review prompts for other AIs |
+| Independent spec.md Review | Gemini 3.1 Pro (via Perplexity) | Cold-read review with full context — found blind spots Claude missed |
+| Apply Review Patches | GPT-5.2 Thinking (via Perplexity) | Precise, targeted execution of fixes from review findings |
+| Independent SKILL.md Review | Gemini 3.1 Pro (via Perplexity) | Second independent review on the system prompt |
+| Final Verification | Claude Opus 4.6 (Antigravity IDE) | Deep compliance check against GUIDEBOOK requirements |
+| Dry-run & Polish | Gemini 3.1 Pro + Claude Opus 4.6 (Antigravity IDE) | End-to-end test simulation + fix loop |
+
+**Human-in-the-loop:** Every AI suggestion was reviewed manually. Findings that conflicted with design intent were rejected (e.g., rejected the rule "follower=0 → INVALID" because the existing bracket < 10k already handles it correctly at 4 pts).
+
+**Key insight:** Each AI has a distinct role — Sonnet for creative ideation and fast execution, GPT for precise targeted fixes, Gemini for large-context cold reviews without bias, Opus for deep final verification. This is a **multi-model QA pipeline**, not a single-AI workflow.
 
 ## How to Run
 
