@@ -3,12 +3,12 @@
 **Owner:** Vũ Phương Anh (Sarah)
 **Cook A Skill — Day 3 | Platform: Claude Project**
 
-| Mục | Nội dung |
+| Item | Details |
 |:---|:---|
-| **Tên Skill** | KOL Qualifier & Outreach Drafter |
-| **Việc gì được automate** | Đánh giá + phân tier danh sách KOL theo campaign spec, rồi draft DM cá nhân hóa cho từng KOL qualified — thay vì BD phải đọc từng profile, chấm điểm cảm tính, rồi viết outreach từ đầu. |
-| **TRƯỚC: làm tay** | BD nhận spec sản phẩm → lướt Twitter từng KOL → đánh giá bằng cảm tính (có fit không?) → viết DM generic copy-paste cho tất cả. **Mất 3–4 giờ cho 10–15 KOLs**, outreach quality thấp, reply rate ~5–10%. |
-| **SAU: có skill** | Paste campaign spec + KOL list vào Claude → AI chấm điểm 4 chiều (Relevance 40 + Content Fit 30 + Engagement 20 + Language 10) → phân Tier A/B/C → draft DM cá nhân hóa dựa trên content thật của KOL. **Mất ~5 phút**, mỗi DM có personalization evidence rõ ràng. |
-| **Tool/AI đã dùng** | Claude (Project mode) — SKILL.md as System Prompt |
-| **Limitation** | 1. Không tự crawl KOL data — user phải cung cấp danh sách + content bullets thủ công. 2. Scoring dựa trên bullets user cung cấp, không phải full content history. 3. DM chỉ là draft — BD vẫn cần review trước khi gửi. |
-| **Roadmap mở rộng** | 1. Kết nối Twitter API để auto-pull KOL data + recent tweets. 2. Thêm dimension "Brand Safety" vào scoring rubric. 3. A/B test DM variants → track reply rate → feedback loop cải thiện prompt. 4. Batch mode: chạy nhiều campaign cùng lúc, so sánh KOL overlap. |
+| **Skill Name** | KOL Qualifier & Outreach Drafter |
+| **What is automated** | Evaluates and tiers a KOL list against a campaign spec, then drafts personalized DMs for each qualified KOL — instead of BD manually reviewing each profile, scoring by gut feel, and writing outreach from scratch. |
+| **BEFORE: manual process** | BD receives a product spec → scrolls through each KOL's Twitter → evaluates fit by gut feel (good match or not?) → writes a generic copy-paste DM for all. **Takes 3–4 hours for 10–15 KOLs**, low outreach quality, reply rate ~5–10%. |
+| **AFTER: with skill** | Paste campaign spec + KOL list into Claude → AI scores across 4 dimensions (Relevance 40 + Content Fit 30 + Engagement 20 + Language 10) → assigns Tier A/B/C → drafts personalized DMs based on the KOL's actual content. **Takes ~5 minutes**, each DM has clear personalization evidence. |
+| **Tools/AI used** | Claude (Project mode) — SKILL.md as System Prompt |
+| **Limitations** | 1. Cannot auto-crawl KOL data — user must provide the list + content bullets manually. 2. Scoring is based on user-provided bullets, not full content history. 3. DMs are drafts only — BD must review before sending. |
+| **Expansion Roadmap** | 1. Connect Twitter API to auto-pull KOL data + recent tweets. 2. Add a "Brand Safety" dimension to the scoring rubric. 3. A/B test DM variants → track reply rate → feedback loop to improve the prompt. 4. Batch mode: run multiple campaigns at once, compare KOL overlap. |
