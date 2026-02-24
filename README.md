@@ -27,16 +27,16 @@ AI Skill cho BD/Marketing: paste campaign spec + danh sách KOL → AI chấm đ
 
 ## AI Showcase
 
-Thư mục `ai-showcase/` chứa các screenshot chứng minh quá trình làm việc với AI:
+Thư mục `ai-showcase/` chứa 8 screenshot chứng minh quá trình làm việc với AI, theo thứ tự timeline:
 
-1. `01-brainstorm-spec-with-claude.png` — Lên ý tưởng spec với Claude
-2. `02-claude-analyzing-prompt-weaknesses.png` — Claude phân tích điểm yếu trong adversarial prompt
-3. `03-gemini-applying-findings-to-skill.png` — Dùng Gemini để apply các findings vào file SKILL.md
-4. `04-prompt-ai-to-review-spec.png` — Dùng AI prompt AI khác review spec (multi-AI pipeline)
-5. `05-human-review-and-selective-apply.png` — Human-in-the-loop: review findings và chọn lọc apply
-6. `06-ai-dry-run-test-automation.png` — AI tự chạy dry-run test automation
-7. `07-ai-compliance-audit.png` — AI audit compliance với GUIDEBOOK (PASS/FAIL table)
-8. `08-dry-run-all-guardrails-pass.png` — Kết quả: tất cả guardrails PASS ✅
+1. `01-ideation-brainstorm-claude.png` — Brainstorm ý tưởng skill cùng Claude (Sonnet 4.6)
+2. `02-self-critique-prompt-weaknesses.png` — Claude tự phản biện, chỉ ra 6 điểm yếu trong prompt
+3. `03-multi-ai-review-pipeline.png` — Viết review prompt cho AI khác đọc cold-read (multi-AI pipeline)
+4. `04-human-in-loop-selective-apply.png` — Human-in-the-loop: apply 7 findings, loại bỏ CAT-2-02
+5. `05-adversarial-kol-risk-analysis.png` — AI phân tích rủi ro & điểm yếu của từng KOL (adversarial)
+6. `06-ai-test-plan-generation.png` — AI tự viết Full Flow Test Guide + expected tier distribution
+7. `07-compliance-audit-checklist.png` — AI audit toàn bộ GUIDEBOOK requirements (PASS/FAIL/PARTIAL)
+8. `08-final-all-guardrails-pass.png` — Kết quả dry-run: tất cả guardrails PASS ✅, score khớp 100%
 
 
 ## How to Run
@@ -56,4 +56,4 @@ Thư mục `ai-showcase/` chứa các screenshot chứng minh quá trình làm v
 
 ---
 
-*Cook A Skill — Day 3 | By Sarah*
+*Cook A Skill — Day 4 | By Sarah*
