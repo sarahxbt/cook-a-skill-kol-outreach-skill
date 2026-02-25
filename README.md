@@ -15,6 +15,71 @@ AI Skill for BD/Marketing: paste a campaign spec + KOL list → AI scores across
 **Tier B** 50–74 → DM1 + Soft CTA  
 **Tier C** < 50 → No DM
 
+## How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         USER INPUT                              │
+│  Campaign Spec (mock_campaign.md) + KOL List (mock_kols.md)     │
+└──────────────────────────┬──────────────────────────────────────┘
+                           ▼
+                ┌─────────────────────┐
+                │  Clarifying Q's     │──── Q1: Reply direction
+                │  (Q1, Q2, Q3)       │──── Q2: Tone preference
+                │  Must answer all 3  │──── Q3: Hard constraints
+                └──────────┬──────────┘
+                           ▼
+                ┌─────────────────────┐     ┌──────────────────┐
+                │  Readiness Gate     │────▶│ HALT if < 6/10   │
+                │  Score 5 conditions │     │ Tell user what's  │
+                │  Threshold: ≥ 6     │     │ missing           │
+                └──────────┬──────────┘     └──────────────────┘
+                           ▼
+                ┌─────────────────────┐
+                │  Duplicate Check    │──── Halt + ask user
+                │  (G8)              │     if duplicates found
+                └──────────┬──────────┘
+                           ▼
+          ┌────────────────────────────────────┐
+          │         4-DIMENSION SCORING         │
+          │                                    │
+          │  Relevance ········· 40 pts        │
+          │  Content Style Fit · 30 pts        │
+          │  Engagement ········ 20 pts        │
+          │  Language Match ···· 10 pts        │
+          │                    ─────           │
+          │                    100 pts         │
+          └────────────────┬───────────────────┘
+                           ▼
+          ┌────────────────────────────────────┐
+          │         TIER ASSIGNMENT             │
+          │                                    │
+          │  ≥ 75 → Tier A (DM1+CTA+Follow-up)│
+          │  50–74 → Tier B (DM1+CTA)         │
+          │  < 50 → Tier C (No DM)            │
+          └────────────────┬───────────────────┘
+                           ▼
+          ┌────────────────────────────────────┐
+          │         DM DRAFTING                 │
+          │                                    │
+          │  DM1: ≤ 300 chars, zero pitch      │
+          │  Personalized from real bullets     │
+          │  [GENERIC] tag if 0 bullets        │
+          │  Follow-up: ≤ 200 chars (A only)   │
+          └────────────────┬───────────────────┘
+                           ▼
+          ┌────────────────────────────────────┐
+          │         SELF-CHECK (SC-1→SC-7)     │
+          │  Silent verification before output  │
+          │  7 automated checks on every run   │
+          └────────────────┬───────────────────┘
+                           ▼
+          ┌────────────────────────────────────┐
+          │         OUTPUT TO USER              │
+          │  Scorecard + DMs + Edge Case Notes  │
+          └────────────────────────────────────┘
+```
+
 ## Files
 
 | File | Description |
